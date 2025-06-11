@@ -186,4 +186,79 @@
 
   // Format countdown time
   function formatCountdown(ms) {
-    if(ms <= 0) return "
+    if(ms <= 0) return "return "Started";
+  }
+
+  // Render matches
+  function renderMatches(type = "live") {
+    const container = document.getElementById("match-list");
+    container.innerHTML = "";
+    const now = new Date().getTime();
+
+    const filtered = matches.filter(match => {
+      const start = new Date(match.startTime).getTime();
+      if (type === "live") {
+        return match.status === "Live";
+      } else {
+        return start > now;
+      }
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = "<p style='text-align:center;'>No " + (type === "live" ? "Live" : "Upcoming") + " matches now.</p>";
+      return;
+    }
+
+    filtered.forEach(match => {
+      const matchDiv = document.createElement("div");
+      matchDiv.className = "match";
+
+      const teamsHTML = `
+        <div class="teams">
+          <img src="${match.team1Img}" alt="${match.team1}" />
+          ${match.team1} vs ${match.team2}
+          <img src="${match.team2Img}" alt="${match.team2}" />
+        </div>
+      `;
+
+      const timeInfoHTML = `
+        <div class="time-info">
+          <div>${match.dateTimeText}</div>
+          ${match.status === "Live" 
+            ? `<div class="countdown"><span class="live-blink">LIVE</span> ${match.liveTime || ""}</div>` 
+            : `<div class="countdown">${formatCountdown(new Date(match.startTime).getTime() - now)}</div>`}
+        </div>
+      `;
+
+      const linksHTML = `
+        <div class="stream-links" style="margin-top:10px; width:100%; text-align:center;">
+          ${match.links.map(link => `<a href="${link.url}" target="_blank">${link.name}</a>`).join("")}
+        </div>
+      `;
+
+      matchDiv.innerHTML = teamsHTML + timeInfoHTML + linksHTML;
+      container.appendChild(matchDiv);
+    });
+  }
+
+  // Tab functionality
+  document.getElementById("liveBtn").addEventListener("click", () => {
+    document.getElementById("liveBtn").classList.add("active");
+    document.getElementById("upcomingBtn").classList.remove("active");
+    renderMatches("live");
+  });
+
+  document.getElementById("upcomingBtn").addEventListener("click", () => {
+    document.getElementById("upcomingBtn").classList.add("active");
+    document.getElementById("liveBtn").classList.remove("active");
+    renderMatches("upcoming");
+  });
+
+  // Start fetching
+  fetchData();
+
+  // Refresh every 1 minute
+  setInterval(fetchData, 60000);
+</script>
+</body>
+</html>
