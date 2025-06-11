@@ -1,264 +1,97 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-  <meta charset="UTF-8"/>
-  <title>BDStreamHub - Live Streaming</title>
-  <style>
-    body{margin:0; font-family: 'Arial', sans-serif; background:#111; color:#eee;}
-    nav {
-      background:#222;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:10px 15px;
-      position:sticky;
-      top:0;
-      z-index:999;
-    }
-    nav .logo {
-      font-weight:bold;
-      font-size:1.3em;
-      color:#08f;
-    }
-    nav input[type=search] {
-      border-radius:50%;
-      border:none;
-      width:30px; height:30px;
-      padding:0;
-      background:#333 url('data:image/svg+xml;utf8,<svg fill="white" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>') no-repeat center center;
-      background-size: 15px 15px;
-      cursor:pointer;
-      transition: width 0.3s ease;
-      color:transparent;
-    }
-    nav input[type=search]:focus {
-      width:200px;
-      border-radius:5px;
-      background:none;
-      color:#eee;
-      padding-left:10px;
-    }
-    .notice {
-      background:#ff0;
-      color:#000;
-      padding:8px;
-      white-space: nowrap;
-      overflow: hidden;
-      box-sizing:border-box;
-      font-weight:bold;
-      animation: scroll-left 20s linear infinite;
-    }
-    @keyframes scroll-left {
-      0% {transform: translateX(100%);}
-      100% {transform: translateX(-100%);}
-    }
-    .tabs {
-      display:flex;
-      justify-content:center;
-      margin-top:10px;
-    }
-    .tabs button {
-      background:#222;
-      border:none;
-      padding:10px 20px;
-      margin:0 5px;
-      color:#eee;
-      font-weight:bold;
-      border-radius:5px 5px 0 0;
-      cursor:pointer;
-      transition: background-color 0.3s;
-    }
-    .tabs button.active, .tabs button:hover {
-      background:#08f;
-    }
-    #match-list {
-      max-width:800px;
-      margin:15px auto;
-      padding:10px;
-    }
-    .match {
-      background:#222;
-      margin-bottom:15px;
-      border-radius:10px;
-      padding:15px;
-      display:flex;
-      justify-content: space-between;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-    .teams {
-      flex:1 1 50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:bold;
-      font-size:1.1em;
-      color:#fff;
-    }
-    .teams img {
-      width:40px;
-      height:40px;
-      border-radius:50%;
-      margin: 0 10px;
-      object-fit:cover;
-      border: 2px solid #08f;
-    }
-    .time-info {
-      flex:1 1 45%;
-      text-align:right;
-      color:#aaa;
-      font-size:0.9em;
-    }
-    .countdown, .live-time {
-      margin-top:5px;
-      font-size:1em;
-      font-weight:bold;
-      color:#08f;
-    }
-    .live-blink {
-      display:inline-block;
-      background:red;
-      padding:4px 10px;
-      border-radius:5px;
-      animation: blink 1s infinite;
-      color:#fff;
-      font-weight:bold;
-      margin-right:10px;
-    }
-    @keyframes blink {
-      0%, 100% {opacity:1;}
-      50% {opacity:0.3;}
-    }
-    .stream-links a {
-      background:#08f;
-      padding:6px 12px;
-      margin:0 5px;
-      border-radius:5px;
-      color:#fff;
-      text-decoration:none;
-      font-weight:bold;
-      font-size:0.9em;
-    }
-    /* Responsive */
-    @media(max-width:600px) {
-      .teams {font-size:0.9em;}
-      .time-info {font-size:0.8em;}
-      nav input[type=search]:focus {width:120px;}
-    }
-  </style>
-</head>
-<body>
+<!DOCTYPE html><html lang="bn"><head><meta charset="UTF-8"/>
+<title>BDStreamHub - Live</title>
+<meta name="viewport" content="width=device-width" />
+<style>
+body{margin:0;font-family:Arial;background:#111;color:#eee;}
+nav{background:#222;display:flex;justify-content:space-between;align-items:center;padding:10px;position:sticky;top:0;}
+.logo{font-weight:bold;color:#08f;}
+.search{border:none;border-radius:50%;width:30px;height:30px;background:#333 center/15px url('data:image/svg+xml;...');outline:none;transition:width .3s;}
+.search:focus{width:200px;border-radius:5px;background:none;padding-left:8px;color:#eee;}
+.notice{background:#ff0;color:#000;padding:8px;overflow:hidden;white-space:nowrap;animation:scroll-left 20s linear infinite;}
+@keyframes scroll-left{0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}
+.tabs{display:flex;justify-content:center;margin:10px 0;}
+.tabs button{background:#222;color:#eee;border:none;padding:8px 16px;margin:0 4px;border-radius:5px 5px 0 0;cursor:pointer;}
+.tabs button.active{background:#08f;}
+#match-list{max-width:800px;margin:auto;padding:10px;}
+.match{background:#222;border-radius:8px;margin-bottom:15px;padding:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+.teams{flex:1;display:flex;align-items:center;justify-content:center;font-weight:bold;}
+.teams img{width:40px;height:40px;border-radius:50%;margin:0 8px;border:2px solid #08f;}
+.time-info{flex:1;text-align:right;color:#aaa;}
+.countdown,.live-time{margin-top:4px;color:#08f;font-weight:bold;}
+.live-blink{display:inline-block;background:red;padding:3px 8px;border-radius:4px;animation:blink 1s infinite;color:#fff;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.stream-links a{background:#08f;color:#fff;padding:6px 10px;margin:4px;border-radius:4px;text-decoration:none;}
+</style></head><body>
 
-<nav>
-  <div class="logo">BDStreamHub</div>
-  <input id="search" type="search" placeholder="Search"/>
-  <a href="https://t.me/yourtelegramchannel" target="_blank" style="color:#08f; font-weight:bold; text-decoration:none;">Join Telegram</a>
-</nav>
+<nav><div class="logo">BDStreamHub</div>
+<input id="search" class="search" type="text" placeholder="Search">
+<a href="https://t.me/bdstreamhub" target="_blank" style="color:#08f;font-weight:bold;">Join Telegram</a></nav>
 
 <div id="notice" class="notice">Loading notice...</div>
-
 <div class="tabs">
   <button id="liveBtn" class="active">Live</button>
   <button id="upcomingBtn">Upcoming</button>
 </div>
-
 <div id="match-list"></div>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzV9QehwCWi74tu4mPx5tovK_eziaubp0TzY5ic1-l4/dev"; // Google Sheets API URL here
-  let matches = [];
-  let noticeText = "";
+const API="https://script.google.com/macros/s/AKfycbwAlJqOwHZ_qq32Qh1-Z_-qsEsiu7hXALpNT7509P8t5FffGbAsnNmjypI15zGhaO-cCg/exec";
+let data=[], noticeText='';
 
-  // Fetch data from Google Sheet via Google Apps Script
-  async function fetchData() {
-    try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      matches = data.matches;
-      noticeText = data.Notice || "Welcome to BDStreamHub!";
-      document.getElementById('notice').innerText = noticeText;
-      renderMatches();
-    } catch (e) {
-      document.getElementById('notice').innerText = "Failed to load notice.";
-      console.error(e);
-    }
+async function load(){
+  const r = await fetch(API);
+  const j = await r.json();
+  data = j.matches;
+  noticeText = j.notice;
+  document.getElementById('notice').innerText = noticeText;
+
+  const now = Date.now();
+  const liveMatches = data.filter(m => m.Status === 'Live' || new Date(m.StartTime).getTime() <= now);
+
+  if (liveMatches.length > 0) {
+    render('Live');
+    liveBtn.classList.add('active');
+    upcomingBtn.classList.remove('active');
+  } else {
+    render('Upcoming');
+    upcomingBtn.classList.add('active');
+    liveBtn.classList.remove('active');
   }
-
-  // Format countdown time
-  function formatCountdown(ms) {
-    if(ms <= 0) return "return "Started";
-  }
-
-  // Render matches
-  function renderMatches(type = "live") {
-    const container = document.getElementById("match-list");
-    container.innerHTML = "";
-    const now = new Date().getTime();
-
-    const filtered = matches.filter(match => {
-      const start = new Date(match.startTime).getTime();
-      if (type === "live") {
-        return match.status === "Live";
-      } else {
-        return start > now;
-      }
-    });
-
-    if (filtered.length === 0) {
-      container.innerHTML = "<p style='text-align:center;'>No " + (type === "live" ? "Live" : "Upcoming") + " matches now.</p>";
-      return;
-    }
-
-    filtered.forEach(match => {
-      const matchDiv = document.createElement("div");
-      matchDiv.className = "match";
-
-      const teamsHTML = `
-        <div class="teams">
-          <img src="${match.team1Img}" alt="${match.team1}" />
-          ${match.team1} vs ${match.team2}
-          <img src="${match.team2Img}" alt="${match.team2}" />
+}
+function formatMs(ms){
+  if(ms<=0)return"00:00:00";
+  const s=Math.floor(ms/1000)%60, m=Math.floor(ms/60000)%60, h=Math.floor(ms/3600000);
+  return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':');
+}
+function render(status){
+  const now=Date.now();
+  const list=data.filter(m=>m.Status===status || (status==='Live'&&new Date(m.StartTime)<=now));
+  const cont=document.getElementById('match-list');
+  cont.innerHTML = list.map((m,i)=>{
+    const st=new Date(m.StartTime).getTime(), diff=now-st;
+    const live= diff>=0;
+    const timer=live ? `LIVE <span class="live-blink"></span> ${formatMs(diff)}` : formatMs(st-now);
+    return `
+    <div class="match">
+      <div class="teams">
+        <img src="${m.Team1Img}" alt="${m.Team1}">
+        ${m.Team1} vs ${m.Team2}
+        <img src="${m.Team2Img}" alt="${m.Team2}">
+      </div>
+      <div class="time-info">
+        ${new Date(m.StartTime).toLocaleString('bn-BD')}<br>
+        <span class="${live?'live-time':'countdown'}">${timer}</span><br>
+        <div class="stream-links">
+          ${m.Links.map(link=>`<a href="${link.url}" target="_blank">${link.name}</a>`).join('')}
         </div>
-      `;
-
-      const timeInfoHTML = `
-        <div class="time-info">
-          <div>${match.dateTimeText}</div>
-          ${match.status === "Live" 
-            ? `<div class="countdown"><span class="live-blink">LIVE</span> ${match.liveTime || ""}</div>` 
-            : `<div class="countdown">${formatCountdown(new Date(match.startTime).getTime() - now)}</div>`}
-        </div>
-      `;
-
-      const linksHTML = `
-        <div class="stream-links" style="margin-top:10px; width:100%; text-align:center;">
-          ${match.links.map(link => `<a href="${link.url}" target="_blank">${link.name}</a>`).join("")}
-        </div>
-      `;
-
-      matchDiv.innerHTML = teamsHTML + timeInfoHTML + linksHTML;
-      container.appendChild(matchDiv);
-    });
-  }
-
-  // Tab functionality
-  document.getElementById("liveBtn").addEventListener("click", () => {
-    document.getElementById("liveBtn").classList.add("active");
-    document.getElementById("upcomingBtn").classList.remove("active");
-    renderMatches("live");
-  });
-
-  document.getElementById("upcomingBtn").addEventListener("click", () => {
-    document.getElementById("upcomingBtn").classList.add("active");
-    document.getElementById("liveBtn").classList.remove("active");
-    renderMatches("upcoming");
-  });
-
-  // Start fetching
-  fetchData();
-
-  // Refresh every 1 minute
-  setInterval(fetchData, 60000);
+        <div class="watermark" style="margin-top:6px;color:#555;font-size:12px">BDStreamHub</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+document.getElementById('liveBtn').onclick=()=>{render('Live'); liveBtn.classList.add('active'); upcomingBtn.classList.remove('active');};
+document.getElementById('upcomingBtn').onclick=()=>{render('Upcoming'); upcomingBtn.classList.add('active'); liveBtn.classList.remove('active');};
+load(); setInterval(load,60000);
 </script>
-</body>
-</html>
+
+</body></html>
