@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8"/>
+  <title>BDStreamHub - Live Streaming</title>
+  <style>
+    body{margin:0; font-family: 'Arial', sans-serif; background:#111; color:#eee;}
+    nav {
+      background:#222;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 15px;
+      position:sticky;
+      top:0;
+      z-index:999;
+    }
+    nav .logo {
+      font-weight:bold;
+      font-size:1.3em;
+      color:#08f;
+    }
+    nav input[type=search] {
+      border-radius:50%;
+      border:none;
+      width:30px; height:30px;
+      padding:0;
+      background:#333 url('data:image/svg+xml;utf8,<svg fill="white" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>') no-repeat center center;
+      background-size: 15px 15px;
+      cursor:pointer;
+      transition: width 0.3s ease;
+      color:transparent;
+    }
+    nav input[type=search]:focus {
+      width:200px;
+      border-radius:5px;
+      background:none;
+      color:#eee;
+      padding-left:10px;
+    }
+    .notice {
+      background:#ff0;
+      color:#000;
+      padding:8px;
+      white-space: nowrap;
+      overflow: hidden;
+      box-sizing:border-box;
+      font-weight:bold;
+      animation: scroll-left 20s linear infinite;
+    }
+    @keyframes scroll-left {
+      0% {transform: translateX(100%);}
+      100% {transform: translateX(-100%);}
+    }
+    .tabs {
+      display:flex;
+      justify-content:center;
+      margin-top:10px;
+    }
+    .tabs button {
+      background:#222;
+      border:none;
+      padding:10px 20px;
+      margin:0 5px;
+      color:#eee;
+      font-weight:bold;
+      border-radius:5px 5px 0 0;
+      cursor:pointer;
+      transition: background-color 0.3s;
+    }
+    .tabs button.active, .tabs button:hover {
+      background:#08f;
+    }
+    #match-list {
+      max-width:800px;
+      margin:15px auto;
+      padding:10px;
+    }
+    .match {
+      background:#222;
+      margin-bottom:15px;
+      border-radius:10px;
+      padding:15px;
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .teams {
+      flex:1 1 50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+      font-size:1.1em;
+      color:#fff;
+    }
+    .teams img {
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      margin: 0 10px;
+      object-fit:cover;
+      border: 2px solid #08f;
+    }
+    .time-info {
+      flex:1 1 45%;
+      text-align:right;
+      color:#aaa;
+      font-size:0.9em;
+    }
+    .countdown, .live-time {
+      margin-top:5px;
+      font-size:1em;
+      font-weight:bold;
+      color:#08f;
+    }
+    .live-blink {
+      display:inline-block;
+      background:red;
+      padding:4px 10px;
+      border-radius:5px;
+      animation: blink 1s infinite;
+      color:#fff;
+      font-weight:bold;
+      margin-right:10px;
+    }
+    @keyframes blink {
+      0%, 100% {opacity:1;}
+      50% {opacity:0.3;}
+    }
+    .stream-links a {
+      background:#08f;
+      padding:6px 12px;
+      margin:0 5px;
+      border-radius:5px;
+      color:#fff;
+      text-decoration:none;
+      font-weight:bold;
+      font-size:0.9em;
+    }
+    /* Responsive */
+    @media(max-width:600px) {
+      .teams {font-size:0.9em;}
+      .time-info {font-size:0.8em;}
+      nav input[type=search]:focus {width:120px;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">BDStreamHub</div>
+  <input id="search" type="search" placeholder="Search"/>
+  <a href="https://t.me/yourtelegramchannel" target="_blank" style="color:#08f; font-weight:bold; text-decoration:none;">Join Telegram</a>
+</nav>
+
+<div id="notice" class="notice">Loading notice...</div>
+
+<div class="tabs">
+  <button id="liveBtn" class="active">Live</button>
+  <button id="upcomingBtn">Upcoming</button>
+</div>
+
+<div id="match-list"></div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzV9QehwCWi74tu4mPx5tovK_eziaubp0TzY5ic1-l4/dev"; // Google Sheets API URL here
+  let matches = [];
+  let noticeText = "";
+
+  // Fetch data from Google Sheet via Google Apps Script
+  async function fetchData() {
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      matches = data.matches;
+      noticeText = data.Notice || "Welcome to BDStreamHub!";
+      document.getElementById('notice').innerText = noticeText;
+      renderMatches();
+    } catch (e) {
+      document.getElementById('notice').innerText = "Failed to load notice.";
+      console.error(e);
+    }
+  }
+
+  // Format countdown time
+  function formatCountdown(ms) {
+    if(ms <= 0) return "
