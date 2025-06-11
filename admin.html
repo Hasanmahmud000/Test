@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Admin – BDStreamHub</title>
+  <style>
+    body{background:#fafafa;color:#111;font-family:sans-serif;padding:20px;max-width:600px;margin:auto;}
+    h1{text-align:center;}
+    form input, form textarea{width:100%;margin:6px 0;padding:8px;border-radius:4px;border:1px solid #ccc;}
+    form button{padding:10px 15px;background:#08f;color:#fff;border:none;border-radius:4px;cursor:pointer;width:100%;}
+    label{font-weight:bold;}
+  </style>
+</head>
+<body>
+  <h1>Admin Panel By BDStreamHub</h1>
+  <form id="matchForm">
+    <label>Match Name</label>
+    <input name="Match" placeholder="Match Name" required/>
+
+    <label>Team 1 Name</label>
+    <input name="Team1" placeholder="Team 1 Name" required/>
+
+    <label>Team 2 Name</label>
+    <input name="Team2" placeholder="Team 2 Name" required/>
+
+    <label>Team 1 Logo URL</label>
+    <input name="Team1Logo" placeholder="Team 1 Logo URL" required/>
+
+    <label>Team 2 Logo URL</label>
+    <input name="Team2Logo" placeholder="Team 2 Logo URL" required/>
+
+    <label>Match Start Time (ISO Format)</label>
+    <input name="MatchTime" placeholder="YYYY-MM-DDThh:mm:ss+06:00" required/>
+
+    <label>Stream Links (Server Name : URL)</label>
+    <textarea name="Streams" placeholder="server1: https://link1.com\nserver2: https://link2.com\nserver3: https://link3.com" rows="4"></textarea>
+
+    <label>Notice (Optional)</label>
+    <textarea name="Notice" placeholder="Notice text for scrolling bar"></textarea>
+
+    <button type="submit">Add Match</button>
+  </form>
+
+  <script>
+    const apiUrl = "https://script.google.com/macros/s/AKfycbzV9QehwCWi74tu4mPx5tovK_eziaubp0TzY5ic1-l4/dev"; // এখানে আপনার গুগল অ্যাপস স্ক্রিপ্ট URL দিবেন
+
+    document.getElementById('matchForm').onsubmit = e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      // Streams textarea থেকে server name + url আলাদা করে পাঠাতে পারেন যদি চান
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      })
+      .then(res => res.text())
+      .then(txt => {
+        alert('ম্যাচ যোগ করা হয়েছে');
+        e.target.reset();
+      })
+      .catch(err => alert('Error: ' + err.message));
+    }
+  </script>
+</body>
+</html>
